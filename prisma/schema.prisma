@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Account {
+  id                String  @id @default(cuid()) @db.VarChar
+  userId            String  @db.VarChar
+  type              String  @db.VarChar
+  provider          String  @db.VarChar
+  providerAccountId String  @db.VarChar
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String? @db.VarChar
+  scope             String? @db.VarChar
+  id_token          String?
+  session_state     String? @db.VarChar
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @db.VarChar
+  sessionToken String   @unique @db.VarChar
+  userId       String   @db.VarChar
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String         @id @default(cuid()) @db.VarChar
+  name              String?        @db.VarChar
+  email             String?        @unique @db.VarChar
+  emailVerified     DateTime?
+  username          String?        @unique @db.VarChar
+  image             String?        @db.VarChar
+  createdSubreddits Subreddit[]    @relation("CreatedBy")
+  subscriptions     Subscription[]
+  votes             Vote[]
+  accounts          Account[]
+  sessions          Session[]
+  Post              Post[]
+  Comment           Comment[]
+  CommentVote       CommentVote[]
+}
+
+model Subreddit {
+  id          String         @id @default(cuid()) @db.VarChar
+  name        String         @unique @db.VarChar
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  creatorId   String?        @db.VarChar
+  posts       Post[]
+  Creator     User?          @relation("CreatedBy", fields: [creatorId], references: [id])
+  subscribers Subscription[]
+
+  @@index([name])
+}
+
+model Subscription {
+  userId      String    @db.VarChar
+  subredditId String    @db.VarChar
+  user        User      @relation(fields: [userId], references: [id])
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+
+  @@id([userId, subredditId])
+}
+
+model Post {
+  id          String    @id @default(cuid()) @db.VarChar
+  title       String    @db.VarChar
+  content     Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String    @db.VarChar
+  subredditId String    @db.VarChar
+  author      User      @relation(fields: [authorId], references: [id])
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+  comments    Comment[]
+  votes       Vote[]
+}
+
+model Comment {
+  id        String        @id @default(cuid()) @db.VarChar
+  text      String        @db.VarChar
+  createdAt DateTime      @default(now())
+  authorId  String        @db.VarChar
+  postId    String        @db.VarChar
+  replyToId String?       @db.VarChar
+  commentId String?       @db.VarChar
+  author    User          @relation(fields: [authorId], references: [id])
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  replyTo   Comment?      @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  replies   Comment[]     @relation("ReplyTo")
+  votes     CommentVote[]
+
+  @@index([replyToId])
+}
+
+model Vote {
+  userId String   @db.VarChar
+  postId String   @db.VarChar
+  type   VoteType
+  user   User     @relation(fields: [userId], references: [id])
+  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+model CommentVote {
+  userId    String   @db.VarChar
+  commentId String   @db.VarChar
+  type      VoteType
+  user      User     @relation(fields: [userId], references: [id])
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
