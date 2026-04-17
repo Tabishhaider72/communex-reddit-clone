@@ -1,6 +1,7 @@
 import { authOptions } from '@/lib/auth'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Icons } from './Icons'
 import { buttonVariants } from './ui/Button'
 import { UserAccountNav } from './UserAccountNav'
@@ -14,8 +15,14 @@ const Navbar = async () => {
       <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
         {/* logo */}
         <Link href='/' className='flex gap-2 items-center'>
-          <Icons.logo className='h-8 w-8 sm:h-6 sm:w-6' />
-          <p className='hidden text-foreground text-sm font-medium md:block'>TalkSphere</p>
+          <Image
+            src='/logo.png'
+            alt='CommuneX logo'
+            width={32}
+            height={32}
+            className='h-8 w-8 sm:h-6 sm:w-6'
+          />
+          <p className='hidden text-foreground text-sm font-medium md:block'>CommuneX</p>
         </Link>
 
         {/* search bar */}
@@ -23,7 +30,7 @@ const Navbar = async () => {
 
         {/* GitHub repository button */}
         <a
-          href='https://github.com/SayedTabish72/talksphere-fullstack-reddit-clone'
+          href='https://github.com/SayedTabish72/CommuneX-fullstack-reddit-clone'
           target='_blank'
           rel='noopener noreferrer'
           className={buttonVariants()}

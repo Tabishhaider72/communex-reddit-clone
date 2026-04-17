@@ -10,7 +10,7 @@ import { notFound } from 'next/navigation'
 import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
-  title: 'TalkSphere',
+  title: 'CommuneX',
   description: 'A full-stack web application inspired by Reddit built with Next.js and TypeScript.',
 }
 
