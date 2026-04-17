@@ -1,70 +1,100 @@
-# TalkSphere - A Fullstack Reddit Clone
+# CommuneX - A Fullstack Reddit Clone
 
-TalkSphere is a full-stack web application inspired by Reddit, built using Next.js 13, React, Tailwind CSS, Authentication, Prisma, and MySQL. It provides a platform for users to create communities, post content, engage in discussions, and vote on posts.
+CommuneX is a full-stack community and discussion platform inspired by Reddit, built with Next.js 13, React, Tailwind CSS, Prisma, PostgreSQL, Upstash Redis, NextAuth, and Uploadthing. It supports authenticated communities, rich content posts, comments, voting, subscriptions, and image uploads.
 
-<img width="1280" height="642" alt="252448416-727a6568-fe6a-4aa2-a34c-4738d4a05b95" src="https://github.com/user-attachments/assets/65ecf3ac-2905-4990-9b15-ce4a9838831a" />
+<img width="1683" height="927" alt="image" src="https://github.com/user-attachments/assets/04f7a1d6-18b0-4fd4-ac80-6370ffbd135c" />
 
-## Features
 
-- User authentication: Register, login, and logout functionality.
-- Community creation: Users can create and join communities based on their interests.
-- Post creation: Users can create text-based posts within communities.
-- Commenting system: Users can comment on posts and engage in discussions.
-- Voting system: Users can upvote or downvote posts and comments.
-- Community moderation: Community moderators have additional privileges to manage posts and comments.
-- Responsive design: The application is optimized for various screen sizes and devices.
+## ✨ Features
 
-## Technologies Used
+- Google authentication with NextAuth and Prisma
+- Community (subreddit) creation and subscription management
+- Rich post creation using Editor.js blocks
+- Image upload support using Uploadthing
+- Post and comment voting with upvote/downvote support
+- Nested comments with reply threads
+- Search for communities and posts
+- Responsive UI built with Tailwind CSS
+- Server-side caching of post data using Upstash Redis
+- Client-side async state management with React Query
 
-- Next.js 13: A React framework for building server-side rendered and static websites.
-- React: A JavaScript library for building user interfaces.
-- Tailwind CSS: A utility-first CSS framework for rapid UI development.
-- Authentication: Implementing user authentication using JWT and cookies.
-- Prisma: A modern database toolkit for TypeScript and Node.js.
-- MySQL: A relational database management system for data storage.
+## 🏗️ System Architecture
 
-## Installation
+- Frontend: Next.js 13 App Router with server and client components
+- Authentication: NextAuth with Google provider and JWT sessions
+- Database: Prisma ORM with PostgreSQL
+- Caching: Upstash Redis for post and vote-related caching
+- File uploads: Uploadthing image upload pipeline secured via NextAuth middleware
+- State management: React Query for fetching, caching, and mutations
+- Editor: Editor.js content blocks stored in a Prisma JSON field
 
-1. Clone the repository: `git clone https://github.com/your-username/talksphere.git`
-2. Navigate to the project directory: `cd talksphere`
+## Data Model and Design
+
+- `User` with profile details, `username`, and relations to posts, comments, votes, and subscriptions
+- `Subreddit` communities created by users, with subscriptions modeled through `Subscription`
+- `Post` objects store structured content in JSON and belong to a subreddit
+- `Comment` supports replies with a self-referential relation
+- `Vote` and `CommentVote` use composite primary keys to enforce one vote per user per item
+- `VoteType` enum includes `UP` and `DOWN`
+- Post data is cached in Redis after voting events to reduce repeated database queries
+
+## 💡 Codebase Highlights
+
+- `src/lib/db.ts`: Prisma client initialization with hot-reload safe caching
+- `src/lib/auth.ts`: NextAuth configuration using Prisma adapter and JWT sessions
+- `src/lib/redis.ts`: Upstash Redis client for caching post details
+- `src/app/api/subreddit/post/vote/route.ts`: vote endpoint that updates database vote state and refreshes Redis cache
+- `src/app/api/uploadthing/core.ts`: Uploadthing file router with authenticated image upload middleware
+- `src/components/*`: client-side components for posts, votes, comments, subscriptions, and auth interfaces
+- `src/app/r/[slug]/post/[postId]/page.tsx`: server-rendered post detail page with Redis cache lookup
+
+## 🚀 Installation
+
+1. Clone the repository: `git clone https://github.com/your-username/breadit-master.git`
+2. Navigate to the project directory: `cd breadit-master`
 3. Install dependencies: `npm install`
-4. Set up the database connection in the `.env` file.
+4. Create a `.env` file with the required values:
+	- `DATABASE_URL`
+	- `NEXTAUTH_URL`
+	- `GOOGLE_CLIENT_ID`
+	- `GOOGLE_CLIENT_SECRET`
+	- `REDIS_URL`
+	- `REDIS_SECRET`
+	- `UPLOADTHING_SECRET`
 5. Run database migrations: `npx prisma migrate dev`
 6. Start the development server: `npm run dev`
 
-## Usage
+## ▶️ Usage
 
 1. Open the application in your browser: `http://localhost:3000`
-2. Register a new user account or log in with existing credentials.
-3. Explore communities, create new communities, and join existing ones.
-4. Create posts within communities and engage in discussions.
-5. Interact with posts and comments by voting and commenting.
-6. Use the moderation features if you are a community moderator.
+2. Sign in using Google
+3. Create or join communities
+4. Create posts with rich content and image uploads
+5. Comment on posts, reply to comments, and vote on content
+6. Use search to discover communities and subreddits
 
-## Roadmap
+## 🛣️ Roadmap
 
-- Add search functionality to discover communities and posts.
-- Implement real-time updates using WebSockets for instant notifications.
-- Improve the user interface and add additional customization options.
-- Enhance community moderation features and tools.
-- Optimize performance and address security considerations.
+- Add advanced search and filtering
+- Improve real-time updates for votes and comments
+- Expand moderation tools for community owners
+- Add mobile-friendly enhancements and accessibility improvements
+- Optimize caching and performance further
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! If you would like to contribute to TalkSphere, please follow these steps:
+Contributions are welcome! If you would like to help improve Breadit, please:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make the necessary changes and commit your code.
-4. Push your branch to your forked repository.
-5. Open a pull request with a detailed description of your changes.
+1. Fork the repository
+2. Create a new branch for your feature or fix
+3. Make your changes and commit them
+4. Push the branch to your fork
+5. Open a pull request with a clear description
 
-## License
+## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Contact
+## 📬 Contact
 
 For any inquiries or feedback, please contact the project maintainer: sayedtabish72@example.com
-
-**Note**: This is a fictional project for demonstration purposes only.
